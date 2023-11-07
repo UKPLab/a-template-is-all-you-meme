@@ -1,1 +1,69 @@
-# a-template-is-all-you-meme
+# A Template Is All You Meme
+Source code and data for [A Template Is All You Meme](https://arxiv.org/abs/2302.08957v2).
+
+Contact person: Luke Bates, luke's_first_name.luke's_last_name@tu-darmstadt.de
+
+https://www.ukp.tu-darmstadt.de/
+
+https://www.tu-darmstadt.de/
+
+
+Don't hesitate to send us an e-mail or report an issue, if something is broken (and it shouldn't be) or if you have further questions.
+
+> This repository contains experimental software and is published for the sole purpose of giving additional background details on the respective publication.
+
+## Project structure
+* `tlc.py` -- Template-Label Counter
+* `main.py` -- code file that uses the other code files
+* `memetile.py` -- util code
+* `scriptorinos/` -- eda and scraping scripts
+* `output/` -- all of the classification results from the paper
+
+
+## Requirements
+Install [clip first](https://github.com/openai/CLIP).
+Please use the `requirements.txt` file. 
+
+## KYMKB / Data / Embeddings
+The Know Your Meme Knowledge Base can be found [here](https://drive.google.com/drive/folders/14_oOHTabftFg31rggg95Mk0ZIr4IsLOV?usp=sharing).
+The data we used can be found [here]().
+If you don't want to compute your own embeddings, ours are [here]().
+
+
+## Installation
+To setup, please follow the instructions below.
+```
+https://github.com/UKPLab/a-template-is-all-you-meme.git
+cd a-template-is-all-you-meme
+python -m venv mvenv
+source mvenv/bin/activate
+pip install --upgrade pip
+#install clip
+pip install -r requirements.txt
+```
+
+### Reproduce our results
+
+You can run our code/TLC with `python main.py`. You can specifiy which configurations by passing arguments to python.
+
+`--template_path #directory where the KYMKB is located`
+`--dataset #which dataset from the paper you want to play with`
+`--data_root #where the datafiles are. only relevant for figmemes, mami, and multioff, which you should pass something like data/annotations, data/MAMI_DATASET, and data/MultiOFF_DATASET respectively`
+`--num_neigh #how many neighbors are we talking about`
+`--vote_type #template vs label vote`
+`--split #only relevant for figmemes, mami, and multioff, which you should pass something like standard, task5_style, and standard respectively`
+`--include_examples #template or templates+examples? True or False, respectively`
+`--feature_extraction #which encoder? ViT-L/14@336px, ViT-B/32, or ViT-B/16`
+`--task #only relevant for Memotion 3 1 = A, 2 = B`
+`--combine #how to model the modalities, None (just template vs memes), concatenate, fusion, latefusion, or fancy (normalize then average)`
+`--just_text #use just about vs OCR? True or False`
+`--need_to_read #use our embeddings or note? True or False`
+
+
+### Expected results
+Once finished, results will be printed out. You can also see our results in the `output/` directory.
+
+### Citation
+If our work was helpful for your work, please be so kind as to cite us:
+
+coming soon!
