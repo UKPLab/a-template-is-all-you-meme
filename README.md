@@ -15,7 +15,7 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
 ## Project structure
 * `tlc.py` -- Template-Label Counter
 * `main.py` -- code file that uses the other code files
-* `memetile.py` -- util code
+* `memetils.py` -- util code
 * `scriptorinos/` -- eda and scraping scripts
 * `output/` -- all of the classification results from the paper
 
@@ -25,8 +25,14 @@ Install [clip first](https://github.com/openai/CLIP).
 Please use the `requirements.txt` file. 
 
 ## KYMKB / Data / Embeddings
+[Our data files](https://knowyourmeme.com/memes/chonk-oh-lawd-he-comin) are some [chonky bois](https://knowyourmeme.com/memes/big-chungus)
+
 The Know Your Meme Knowledge Base can be found [here](https://drive.google.com/drive/folders/14_oOHTabftFg31rggg95Mk0ZIr4IsLOV?usp=sharing).
+
 The data we used can be found [here]().
+
+The images from our EDA can be found [here]().
+
 If you don't want to compute your own embeddings, ours are [here]().
 
 
@@ -44,20 +50,21 @@ pip install -r requirements.txt
 
 ### Reproduce our results
 
-You can run our code/TLC with `python main.py`. You can specifiy which configurations by passing arguments to python.
-
-`--template_path #directory where the KYMKB is located`
-`--dataset #which dataset from the paper you want to play with`
-`--data_root #where the datafiles are. only relevant for figmemes, mami, and multioff, which you should pass something like data/annotations, data/MAMI_DATASET, and data/MultiOFF_DATASET respectively`
-`--num_neigh #how many neighbors are we talking about`
-`--vote_type #template vs label vote`
-`--split #only relevant for figmemes, mami, and multioff, which you should pass something like standard, task5_style, and standard respectively`
-`--include_examples #template or templates+examples? True or False, respectively`
-`--feature_extraction #which encoder? ViT-L/14@336px, ViT-B/32, or ViT-B/16`
-`--task #only relevant for Memotion 3 1 = A, 2 = B`
-`--combine #how to model the modalities, None (just template vs memes), concatenate, fusion, latefusion, or fancy (normalize then average)`
-`--just_text #use just about vs OCR? True or False`
-`--need_to_read #use our embeddings or note? True or False`
+You can run TLC with `python main.py`. You can specifiy which configurations by passing arguments to python.
+```
+--template_path #directory where the KYMKB is located
+--dataset #which dataset from the paper you want to play with
+--data_root #where the datafiles are. only relevant for figmemes, mami, and multioff, which you should pass something like data/annotations, data/MAMI_DATASET, and data/MultiOFF_DATASET respectively
+--num_neigh #how many neighbors are we talking about
+--vote_type #template vs label vote
+--split #only relevant for figmemes, mami, and multioff, which you should pass something like standard, task5_style, and standard respectively
+--include_examples #template or templates+examples? True or False, respectively
+--feature_extraction #which encoder? ViT-L/14@336px, ViT-B/32, or ViT-B/16
+--task #only relevant for Memotion 3 1 = A, 2 = B
+--combine #how to model the modalities, None (just template vs memes), concatenate, fusion, latefusion, or fancy (normalize then average)
+--just_text #use just about vs OCR? True or False
+--need_to_read #use our embeddings or note? True or False
+```
 
 
 ### Expected results
