@@ -1,5 +1,5 @@
 # A Template Is All You Meme
-Source code and data for [A Template Is All You Meme](https://arxiv.org/abs/2302.08957v2).
+Source code and data for [A Template Is All You Meme](https://knowyourmeme.com/memes/404).
 
 Contact person: Luke Bates, luke's_first_name.luke's_last_name@tu-darmstadt.de
 
@@ -22,19 +22,21 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
 
 ## Requirements
 Install [clip first](https://github.com/openai/CLIP).
-Please use the `requirements.txt` file. 
+
+Then, please use the `requirements.txt` file. 
 
 ## KYMKB / Data / Embeddings
 [Our data files](https://knowyourmeme.com/memes/chonk-oh-lawd-he-comin) are some [chonky bois](https://knowyourmeme.com/memes/big-chungus)
 
 The Know Your Meme Knowledge Base can be found [here](https://drive.google.com/drive/folders/14_oOHTabftFg31rggg95Mk0ZIr4IsLOV?usp=sharing).
 
-The data we used can be found [here]().
+The data we used can be found [here](https://drive.google.com/file/d/1P6FLoJCxVSM5xwFbN1-cpfqyM9eoVuWg/view?usp=sharing).
 
-The images from our EDA can be found [here]().
+The images from our EDA can be found [here](https://drive.google.com/drive/folders/1g-BXQNSNOidDBqV2E0wa0BLwoRRp7OGs?usp=sharing).
 
-If you don't want to compute your own embeddings, ours are [here]().
+If you don't want to compute your own embeddings, ours are [here](https://drive.google.com/file/d/1myKQylbAB1OLwRukzAD7ZNWFRUUI88UU/view?usp=sharing).
 
+Remember, sometimes memes are mean. We take no responsiblility if they are offensive nor do they reflect our views in any way.
 
 ## Installation
 To setup, please follow the instructions below.
@@ -44,7 +46,7 @@ cd a-template-is-all-you-meme
 python -m venv mvenv
 source mvenv/bin/activate
 pip install --upgrade pip
-#install clip
+#install clip here please
 pip install -r requirements.txt
 ```
 
