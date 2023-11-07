@@ -1,0 +1,247 @@
+Annotations: 0it [00:00, ?it/s]Annotations: 5141it [00:00, 126023.02it/s]
+Annotations: 0it [00:00, ?it/s]Annotations: 5141it [00:00, 250857.02it/s]
+Annotations: 0it [00:00, ?it/s]Annotations: 5141it [00:00, 424349.92it/s]
+feature_dir  embeddings/ViT-L/14@336px/None/
+(3599, 768)
+(5220, 768)
+0it [00:00, ?it/s]3599it [00:00, 2748097.60it/s]
+TRAINING
+zero
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       599
+           1       1.00      1.00      1.00       717
+           2       1.00      1.00      1.00       721
+           3       1.00      1.00      1.00       330
+           4       1.00      1.00      1.00       764
+           5       1.00      1.00      1.00       328
+
+   micro avg       1.00      1.00      1.00      3459
+   macro avg       1.00      1.00      1.00      3459
+weighted avg       1.00      1.00      1.00      3459
+ samples avg       0.71      0.71      0.71      3459
+
+one
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       599
+           1       1.00      1.00      1.00       717
+           2       1.00      1.00      1.00       721
+           3       1.00      1.00      1.00       330
+           4       1.00      1.00      1.00       764
+           5       1.00      1.00      1.00       328
+
+   micro avg       1.00      1.00      1.00      3459
+   macro avg       1.00      1.00      1.00      3459
+weighted avg       1.00      1.00      1.00      3459
+ samples avg       1.00      1.00      1.00      3459
+
+
+zero
+micro
+100.0
+
+macro
+100.0
+
+weighted
+100.0
+
+samples
+70.93637121422618
+
+one
+micro
+100.0
+
+macro
+100.0
+
+weighted
+100.0
+
+samples
+100.0
+
+idks: 3599
+
+TRAINING PREDICTION
+zero
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00       599
+           1       0.00      0.00      0.00       717
+           2       0.20      1.00      0.33       721
+           3       0.00      0.00      0.00       330
+           4       0.00      0.00      0.00       764
+           5       0.00      0.00      0.00       328
+
+   micro avg       0.20      0.21      0.20      3459
+   macro avg       0.03      0.17      0.06      3459
+weighted avg       0.04      0.21      0.07      3459
+ samples avg       0.20      0.15      0.17      3459
+
+one
+              precision    recall  f1-score   support
+
+           0       1.00      0.00      0.00       599
+           1       1.00      0.00      0.00       717
+           2       0.20      1.00      0.33       721
+           3       1.00      0.00      0.00       330
+           4       1.00      0.00      0.00       764
+           5       1.00      0.00      0.00       328
+
+   micro avg       0.20      0.21      0.20      3459
+   macro avg       0.87      0.17      0.06      3459
+weighted avg       0.83      0.21      0.07      3459
+ samples avg       0.20      0.44      0.68      3459
+
+
+zero
+micro
+20.430716916973648
+
+macro
+5.563271604938272
+
+weighted
+6.957708286488281
+
+samples
+16.737982772992492
+
+one
+micro
+20.430716916973648
+
+macro
+5.563271604938272
+
+weighted
+6.957708286488281
+
+samples
+67.64101139205336
+
+-------------------------------------
+
+TESTING
+zero
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       265
+           1       1.00      1.00      1.00       265
+           2       1.00      1.00      1.00       320
+           3       1.00      1.00      1.00       131
+           4       1.00      1.00      1.00       286
+           5       1.00      1.00      1.00       171
+
+   micro avg       1.00      1.00      1.00      1438
+   macro avg       1.00      1.00      1.00      1438
+weighted avg       1.00      1.00      1.00      1438
+ samples avg       0.68      0.68      0.68      1438
+
+one
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       265
+           1       1.00      1.00      1.00       265
+           2       1.00      1.00      1.00       320
+           3       1.00      1.00      1.00       131
+           4       1.00      1.00      1.00       286
+           5       1.00      1.00      1.00       171
+
+   micro avg       1.00      1.00      1.00      1438
+   macro avg       1.00      1.00      1.00      1438
+weighted avg       1.00      1.00      1.00      1438
+ samples avg       1.00      1.00      1.00      1438
+
+
+zero
+micro
+100.0
+
+macro
+100.0
+
+weighted
+100.0
+
+samples
+67.89883268482491
+
+one
+micro
+100.0
+
+macro
+100.0
+
+weighted
+100.0
+
+samples
+100.0
+
+
+idks: 1542
+TESTING PREDICTION
+zero
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00       265
+           1       0.00      0.00      0.00       265
+           2       0.21      1.00      0.34       320
+           3       0.00      0.00      0.00       131
+           4       0.00      0.00      0.00       286
+           5       0.00      0.00      0.00       171
+
+   micro avg       0.21      0.22      0.21      1438
+   macro avg       0.03      0.17      0.06      1438
+weighted avg       0.05      0.22      0.08      1438
+ samples avg       0.21      0.16      0.17      1438
+
+one
+              precision    recall  f1-score   support
+
+           0       1.00      0.00      0.00       265
+           1       1.00      0.00      0.00       265
+           2       0.21      1.00      0.34       320
+           3       1.00      0.00      0.00       131
+           4       1.00      0.00      0.00       286
+           5       1.00      0.00      0.00       171
+
+   micro avg       0.21      0.22      0.21      1438
+   macro avg       0.87      0.17      0.06      1438
+weighted avg       0.82      0.22      0.08      1438
+ samples avg       0.21      0.48      0.64      1438
+
+
+zero
+micro
+21.476510067114095
+
+macro
+5.728607232366632
+
+weighted
+7.648766262965183
+
+samples
+17.133592736705573
+
+one
+micro
+21.476510067114095
+
+macro
+5.728607232366632
+
+weighted
+7.648766262965183
+
+samples
+64.28015564202335
+
+
+Job's Done!
