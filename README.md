@@ -1,5 +1,5 @@
 # A Template Is All You Meme
-#### Our work should only ever be used for academic purposes.
+#### Disclaimer: Our work should only ever be used for academic purposes.
 Source code and data for [A Template Is All You Meme](https://knowyourmeme.com/memes/404).
 
 Contact person: Luke Bates, luke's_first_name.luke's_last_name@tu-darmstadt.de
@@ -27,7 +27,7 @@ Install [clip first](https://github.com/openai/CLIP).
 Then, please use the `requirements.txt` file. 
 
 ## KYMKB / Data / Embeddings
-#### Our work should only ever be used for academic purposes.
+#### Disclaimer: Our work should only ever be used for academic purposes.
 [Our data files](https://knowyourmeme.com/memes/chonk-oh-lawd-he-comin) are some [chonky bois](https://knowyourmeme.com/memes/big-chungus)
 
 The Know Your Meme Knowledge Base can be found [here](https://drive.google.com/drive/folders/14_oOHTabftFg31rggg95Mk0ZIr4IsLOV?usp=sharing).
