@@ -68,7 +68,7 @@ You can run TLC with `python main.py`. You can specifiy which configurations by 
 
 
 ### Expected results
-Once finished, results will be printed out. You can also see our results in the `output/` directory.
+Once finished, results will be printed out.
 
 ### Citation
 If our work was helpful for your work, please be so kind as to cite us:
