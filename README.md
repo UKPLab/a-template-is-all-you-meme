@@ -32,8 +32,6 @@ Then, please use the `requirements.txt` file.
 
 The Know Your Meme Knowledge Base can be found [here](https://drive.google.com/drive/folders/14_oOHTabftFg31rggg95Mk0ZIr4IsLOV?usp=sharing).
 
-The data we used can be found [here](https://drive.google.com/file/d/1P6FLoJCxVSM5xwFbN1-cpfqyM9eoVuWg/view?usp=sharing).
-
 The images from our EDA can be found [here](https://drive.google.com/drive/folders/1g-BXQNSNOidDBqV2E0wa0BLwoRRp7OGs?usp=sharing).
 
 Remember, sometimes memes are mean. We take no responsiblility if they are offensive nor do they reflect our views in any way.
