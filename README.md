@@ -36,8 +36,6 @@ The data we used can be found [here](https://drive.google.com/file/d/1P6FLoJCxVS
 
 The images from our EDA can be found [here](https://drive.google.com/drive/folders/1g-BXQNSNOidDBqV2E0wa0BLwoRRp7OGs?usp=sharing).
 
-If you don't want to compute your own embeddings, ours are [here](https://drive.google.com/file/d/1myKQylbAB1OLwRukzAD7ZNWFRUUI88UU/view?usp=sharing).
-
 Remember, sometimes memes are mean. We take no responsiblility if they are offensive nor do they reflect our views in any way.
 
 ## Installation
