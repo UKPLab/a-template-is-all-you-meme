@@ -18,8 +18,6 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
 * `main.py` -- code file that uses the other code files
 * `memetils.py` -- util code
 * `scriptorinos/` -- eda and scraping scripts
-* `output/` -- all of the classification results from the paper
-
 
 ## Requirements
 Install [clip first](https://github.com/openai/CLIP).
