@@ -2,7 +2,7 @@
 #### Disclaimer: Our work should only ever be used for academic purposes.
 Source code and data for [A Template Is All You Meme](https://knowyourmeme.com/memes/404).
 
-Contact person: Luke Bates, luke's_first_name.luke's_last_name@tu-darmstadt.de
+Contact person: [Luke Bates](luke.bates@tu-darmstadt.de)
 
 https://www.ukp.tu-darmstadt.de/
 
