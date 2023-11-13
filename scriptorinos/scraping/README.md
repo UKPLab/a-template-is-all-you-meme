@@ -18,5 +18,3 @@ Run `organize_templates.py` to get the templates in the final format we used for
 Run `organize_examples.py` to get the template examples in the final format we use for our experiments.
 #### Step 9
 Run `remove_dups.py`to get rid of redundant data.
-#### Step 10
-https://knowyourmeme.com/memes/instructions-unclear
