@@ -70,7 +70,7 @@ Once finished, results will be printed out.
 
 ### Citation
 If our work was helpful for your work, please be so kind as to cite us:
-
+```
 @article{atiaym_2023,
 url = {https://arxiv.org/abs/2311.06649},
 author = {Luke Bates and Peter Ebert Christensen and Preslav Nakov and Iryna Gurevych},
@@ -79,7 +79,8 @@ journal={arXiv preprint arXiv:2311.06649},
 title = {A Template Is All You Meme},
 publisher = {arXiv},
 year = {2023},
-copyright = {Creative Commons Attribution 4.0 International}}
+}
+```
 
 ### Acknowledgements
 we would like thank [Harambe](https://knowyourmeme.com/memes/harambe-the-gorilla). RIP to that king
