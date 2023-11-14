@@ -1,6 +1,6 @@
 # A Template Is All You Meme
 #### Disclaimer: Our work should only ever be used for academic purposes.
-Source code and data for [A Template Is All You Meme](https://knowyourmeme.com/memes/404).
+Source code and data for [A Template Is All You Meme](https://arxiv.org/abs/2311.06649).
 
 Contact person: [Luke Bates](luke.bates@tu-darmstadt.de)
 
@@ -71,8 +71,15 @@ Once finished, results will be printed out.
 ### Citation
 If our work was helpful for your work, please be so kind as to cite us:
 
-coming soon!
-
+@article{atiaym_2023,
+url = {https://arxiv.org/abs/2311.06649},
+author = {Luke Bates and Peter Ebert Christensen and Preslav Nakov and Iryna Gurevych},
+keywords = {Computation and Language (cs.CL), FOS: Computer and information sciences, FOS: Computer and information sciences},
+journal={arXiv preprint arXiv:2311.06649},
+title = {A Template Is All You Meme},
+publisher = {arXiv},
+year = {2023},
+copyright = {Creative Commons Attribution 4.0 International}}
 
 ### Acknowledgements
 we would like thank [Harambe](https://knowyourmeme.com/memes/harambe-the-gorilla). RIP to that king
