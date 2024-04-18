@@ -2,13 +2,13 @@
 #### Step 1
 We installed the environment, in particular BeautifulSoup and Selenium.
 #### Step 2
-We ran the code in `downloader.ipynb` for crawling all the parent entries in the "confirmed" section of Know Your Meme.
+We ran the code in `downloader.ipynb` for crawling all the parent entries in the "confirmed" section via Wayback Machine.
 #### Step 3
 Ran `parseandwrite.py`. This looked at parent entries in the "confirmed" section and crawled them.
 #### Step 4
 Ran `get_images.py`. This with found all the meme templates abouts and the image/parse the page for the title/about section.
 This took take a very long time.
-#### Step 5 (optional)
+#### Step 5 
 We used `read_images.py` to images/handle exceptions
 #### Step 6
 We ran `get_examples.py` to visit each template page and crawl all available examples. This took a very, very long time.
