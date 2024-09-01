@@ -82,14 +82,4 @@ print(templates.shape)
 templates_flatten = templates.reshape(templates.shape[0],-1)
 print(templates_flatten.shape)
 
-knn = NearestNeighbors(n_neighbors=1)
-knn.fit(templates_flatten)
-dists, indices = knn.kneighbors(templates_flatten, return_distance=True)
-for dist, nn_idx in zip(dists, indices):
-    print(dist)
-    print(nn_idx)
-    print()
-
-print(len(problems))
-
 print('jobs done!')

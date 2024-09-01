@@ -11,7 +11,8 @@ pictures = 'pictures'
 jsons = 'jsons'
 if not os.path.exists(pictures):
     os.makedirs(pictures)
-
+if not os.path.exists(jsons):
+    os.makedirs(jsons)
 def request_get_snapshot(url):
     try:
         response = requests.get(f'http://archive.org/wayback/available?url={url}')
@@ -37,9 +38,6 @@ through = 0
 for html_file in tqdm(glob.glob('snapshots/*/*_tablecontent.html')):
     with open(html_file, 'rb') as f:
         soup = BeautifulSoup(f, 'html.parser')
-    #image = soup.find("meta", property="og:image")["content"]
-    #image_snapshot = request_get_snapshot(image)
-    #if image_snapshot:
     hit_count+=1
     try:
         image = soup.find("meta", property="og:image")["content"]
@@ -81,9 +79,4 @@ for html_file in tqdm(glob.glob('snapshots/*/*_tablecontent.html')):
         handler.write(img_data)
     print()
     time.sleep(1)
-    #else:
-    #    miss_count+=1
-    #    out_json = {'filename': html_file, 'count': miss_count}
-    #    with open('{}/{}'.format(jsons, 'miss_images.json'), 'a') as f:
-    #        f.write(json.dumps(out_json)+'\n')
 print('jobs done!')

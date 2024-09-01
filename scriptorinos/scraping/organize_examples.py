@@ -15,7 +15,6 @@ for dictionary1 in tqdm(template_info):
     for key in dictionary1.keys():
         examples, seen_bytes = [], []
 
-        #"out_paths": ["template_examples/templates/SansinSmash/SansinSmash.jpg"
         write_path = dictionary1[key]['out_paths'][0].split('/')[:-1]
         write_title = write_path[-1]
         write_path = '/'.join(write_path)
@@ -23,7 +22,6 @@ for dictionary1 in tqdm(template_info):
         if not os.path.exists(write_path):
             os.makedirs(write_path)
         station_title_path = f'{workstation}{write_title}/*'
-        #print(glob.glob(station_title_path))
         cluster_title_path = f'{cluster}{write_title}/*'
         for example in glob.glob(station_title_path):
             examples.append(example)

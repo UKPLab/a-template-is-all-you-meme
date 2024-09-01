@@ -26,7 +26,7 @@ def request_get_snapshot(url):
         return snapshot
     return None
 
-with open('html_data/3749_basecontent.html', 'rb') as f:# last table found
+with open('html_data/3749_basecontent.html', 'rb') as f:# last table found. replace with your own
     base_soup = BeautifulSoup(f, 'html.parser')
 
 table = base_soup.find('table', class_='entry_list')
@@ -74,9 +74,7 @@ if os.path.isfile('{}/{}'.format(jsons, 'miss.json')):
 else:
     miss_count = 0
 
-for meme_url in tqdm(meme_urls):
-    #if meme_url_count%50 == 0:
-    #    time.sleep(200)            
+for meme_url in tqdm(meme_urls):          
     snapshot = request_get_snapshot(meme_url)
     if snapshot:
         timestamp = snapshot['timestamp']

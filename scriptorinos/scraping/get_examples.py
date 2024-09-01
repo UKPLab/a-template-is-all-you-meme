@@ -48,45 +48,15 @@ def process_misses(if_statement=False):
             f.write(json.dumps(out_json)+'\n')
         
 
-
-
-
-'''
-try:
-    with open('{}/{}'.format(jsons, 'example_pictures.json'), 'r') as f:
-        for line in f:
-            results = dict(json.loads(line))
-            file_name = results['url']
-            hit_files.append(file_name)
-            seen_files.append(file_name)
-    hits = set(hit_files)
-    hit_count = len(hits)
-    
-    with open('{}/{}'.format(jsons, 'miss_examples.json'), 'r') as f:
-        for line in f:
-            results = dict(json.loads(line))
-            file_name = results['filename']
-            miss_files.append(file_name)
-            seen_files.append(file_name)
-    misses = set(miss_files)
-    miss_count = len(misses)
-
-except:
-    hit_count = 0
-    miss_count = 0
-'''
 print('sleep check')
 through = 0
-#seen_files = set(seen_files)
+
 
 for html_file in tqdm(glob.glob('snapshots/*/*_tablecontent.html')):
     time.sleep(1)
     hit_files = []
     miss_files = []
     seen_files = [] 
-    through +=1
-    if through > 2:
-        break
     try:
         with open('{}/{}'.format(jsons, 'example_pictures.json'), 'r') as f:
             for line in f:
@@ -125,7 +95,7 @@ for html_file in tqdm(glob.glob('snapshots/*/*_tablecontent.html')):
     except Exception as e:
         process_misses()
         continue
-    #hit_count+=1
+   
     pic_title = re.sub(r'\W+', '', title)
     about = soup.find("meta", property="og:description")["content"]
     section = soup.find_all("section", class_='bodycopy')
@@ -142,9 +112,9 @@ for html_file in tqdm(glob.glob('snapshots/*/*_tablecontent.html')):
                 print(image_url)
                 image_snapshot = request_get_snapshot(image_url)
                 if image_snapshot:
-                    #print(image_snapshot['url'])
+                    
                     print('snapshot')
-                    #print(image_snapshot)
+                    
                     try:
                         process_images()
                     except:
