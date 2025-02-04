@@ -80,5 +80,4 @@ year = {2023},
 }
 ```
 
-### Acknowledgements
-we would like thank [Harambe](https://knowyourmeme.com/memes/harambe-the-gorilla). RIP to that king
+### Update coming soon!
