@@ -38,7 +38,7 @@ Remember, sometimes memes are mean. We take no responsiblility if they are offen
 ## Installation
 To setup, please follow the instructions below.
 ```
-git clone https://github.com/UKPLab/a-template-is-all-you-meme.git
+git clone https://github.com/UKPLab/naacl2025-a-template-is-all-you-meme.git
 cd a-template-is-all-you-meme
 python -m venv mvenv
 source mvenv/bin/activate
