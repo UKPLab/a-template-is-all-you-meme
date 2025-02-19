@@ -14,8 +14,11 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken (
 > This repository contains experimental software and is published for the sole purpose of giving additional background details on the respective publication.
 
 ## Project structure
+* `finetune_clip.py` -- fine-tuning CLIP with TSplit / Original splits / baseline (downsampling)
+* `clip_model.py` -- CLIP model for fine-tuning
+* `tsplit.py` -- Template-Aware Splitter
 * `tlc.py` -- Template-Label Counter
-* `main.py` -- code file that uses the other code files
+* `main.py` -- for running TLC
 * `memetils.py` -- util code
 * `scriptorinos/` -- eda and scraping scripts
 
@@ -43,27 +46,49 @@ pip install --upgrade pip
 #install clip here please
 pip install -r requirements.txt
 ```
-
-### Reproduce our results
+### Reproduce our results: TSplit
+You can finetune CLIP with `python finetune_clip.py`. You can specifiy which configurations by passing arguments to python.
+```
+--dataset #which dataset from the paper you want to play with
+--data_root #where the datafiles are. only relevant for figmemes, mami, and multioff, which you should pass data/annotations, data/MAMI_DATASET, and data/MultiOFF_DATASET respectively
+--split #only relevant for figmemes, mami, and multioff, which you should pass standard, task5_style, and standard respectively
+--feature_extraction #which encoder? We used ViT-L/14@336px, ViT-B/32, or ViT-B/16
+--task #only relevant for Memotion 3 and MAMI 1 = A, 2 = B
+--reorganize #original for the original splits, baseline for random downsampling, max for TSplit_max, mean for TSplit_mean, median for TSplit_median, quantile for TSplit_percentile
+--batch_size # We used 16
+--epochs #fine-tuning epochs. we used 20
+--seed # random seed for modelling/sampling. we use 0-4
+--sample_train #Downsample TSplit/CLIP Baseline (Table 3) (True or False)
+--random_downsample_tsplit #randomly downsample after TSplitting entire dataset (Table 9) (True or False)
+--sample_tsplit #TSplit downsampling on entire dataset (Table 9) (True or False)
+--overfit #skip model selection and just do test eval on the model fine-tuned for args.epochs (20) epochs. (Table 6) (True or False)
+If the preceding 4 arguments are all False, you will TSplit the entire dataset (Table 4)
+```
+### TSplit expected results
+Results will be written to disk in a json file following this structure:
+```
+clip_results/{args.overfit}/{args.sample_train}/{args.random_downsample_tsplit}/{args.sample_tsplit}/{args.dataset}/{args.reorganize}/{args.feature}/{args.task}/{args.seed}/
+```
+### Reproduce our results: TLC
 
 You can run TLC with `python main.py`. You can specifiy which configurations by passing arguments to python.
 ```
 --template_path #directory where the KYMKB is located
 --dataset #which dataset from the paper you want to play with
---data_root #where the datafiles are. only relevant for figmemes, mami, and multioff, which you should pass something like data/annotations, data/MAMI_DATASET, and data/MultiOFF_DATASET respectively
+--data_root #where the datafiles are. only relevant for figmemes, mami, and multioff, which you should pass data/annotations, data/MAMI_DATASET, and data/MultiOFF_DATASET respectively
 --num_neigh #how many neighbors are we talking about
 --vote_type #template vs label vote
---split #only relevant for figmemes, mami, and multioff, which you should pass something like standard, task5_style, and standard respectively
+--split #only relevant for figmemes, mami, and multioff, which you should pass standard, task5_style, and standard respectively
 --include_examples #template or templates+examples? True or False, respectively
 --feature_extraction #which encoder? ViT-L/14@336px, ViT-B/32, or ViT-B/16
---task #only relevant for Memotion 3 1 = A, 2 = B
+--task #only relevant for Memotion 3 and MAMI 1 = A, 2 = B
 --combine #how to model the modalities, None (just template vs memes), concatenate, fusion, latefusion, or fancy (normalize then average)
 --just_text #use just about vs OCR? True or False
---need_to_read #use our embeddings or note? True or False
+--need_to_read #use our embeddings or not? True or False
 ```
 
 
-### Expected results
+### TLC Expected results
 Once finished, results will be printed out.
 
 ### Citation
