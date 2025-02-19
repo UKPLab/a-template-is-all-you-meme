@@ -1,10 +1,205 @@
 import csv
+import clip
 import os
 import ast
 import datasets
+import gc
 import h5py
+import torch
+import random
 import pandas as pd
+import numpy as np
+import PIL
+from PIL import ImageFile
 from tqdm import tqdm
+from sklearn.preprocessing import normalize
+from sklearn.metrics import f1_score, classification_report
+from torch.utils.data import DataLoader, TensorDataset
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+device = torch.device('cuda:0')
+
+def process(memes, ocr, preprocess):
+    dank_memes, dank_ocrs = [], []
+    for dank_meme, dank_ocr in tqdm(zip(memes, ocr)):
+        try:        
+            dank_meme = preprocess(PIL.Image.open(dank_meme))
+        except FileNotFoundError:
+            dank_meme = 'data/' + dank_meme
+            dank_meme = preprocess(PIL.Image.open(dank_meme))           
+
+        dank_memes.append(dank_meme)
+        
+        dank_ocr = dank_ocr.replace("|||", "|")
+        dank_ocrs.append(dank_ocr)  
+    return torch.tensor(np.stack(dank_memes)).float(), clip.tokenize(dank_ocrs, truncate=True)
+
+def torch_dataset(X, y, args):
+    dataset = TensorDataset(X, torch.Tensor(y).float())
+    loader = DataLoader(dataset, batch_size=args.batch)
+    return loader
+
+def logits_to_preds(clf, matrix, split_memes, split_ocrs):
+    clf.eval()
+    stop = 0
+    for idx, (batch_memes, batch_ocrs) in tqdm(enumerate(zip(split_memes, split_ocrs))):
+        batch_memes, batch_y = batch_memes
+        batch_ocrs, _ = batch_ocrs
+        output = clf(batch_memes.to(device), batch_ocrs.to(device))
+        output = torch.sigmoid(output).cpu()
+        output = output >= 0.5
+        output = np.array(output)
+        rows = output.shape[0]
+
+        if idx != len(split_memes)-1:
+            start = (idx * rows)
+            stop = (idx+1) * rows    
+    
+        else:
+            start = stop
+            stop = stop + rows
+
+        matrix[start:stop, :] = output
+    return matrix
+
+def write_checkpoint(model, epoch, args):
+    folder = f'clip_checkpoints/{args.overfit}/{args.sample_train}/{args.random_downsample_tsplit}/{args.sample_tsplit}/{args.dataset}/{args.reorganize}/{args.feature}/{args.task}/{args.seed}/{epoch}/'
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    
+    torch.save(model.state_dict(), f'{folder}/model.pt')
+
+    return folder
+
+def gimme_f1s(y_true, y_pred, args):
+    if args.dataset in ['figmemes', 'multioff']:
+        score = 'macro'
+    elif args.dataset in ['memotion3']:
+        score = 'weighted'
+    elif args.dataset in ['mami']:
+        if args.task == 1:
+            score = 'macro'
+        elif args.task == 2:
+            score = 'weighted'
+
+    print(classification_report(y_true=y_true, y_pred=y_pred))
+    f1 = f1_score(y_true=y_true, y_pred=y_pred, average=score)*100
+    print(f1)
+    return f1
+
+def ds_to_embeddings(ds, model, preprocess):
+    dank_memes = []
+    for dank_meme in tqdm(ds['img_path']):
+        try:        
+            dank_meme = preprocess(PIL.Image.open(dank_meme))
+        except FileNotFoundError:
+            dank_meme = 'data/' + dank_meme
+            dank_meme = preprocess(PIL.Image.open(dank_meme))
+
+        dank_memes.append(dank_meme)
+    
+    embeddings = clip_features(dank_memes, model)
+    
+    return embeddings
+
+def get_meme_embeddings(dataset, model, preprocess):
+
+    train_embeddings = ds_to_embeddings(dataset['train'], model, preprocess)
+    try:
+        val_embeddings = ds_to_embeddings(dataset['validation'], model, preprocess)
+    except KeyError:
+        val_embeddings = None
+    test_embeddings = ds_to_embeddings(dataset['test'], model, preprocess)
+    return train_embeddings, val_embeddings, test_embeddings 
+
+
+def get_combined_embeddings(args, dataset, model, preprocess):
+    train_embeddings = ds_to_embeddings(dataset['train'], model, preprocess)
+    train_ocr = clip_text(dataset['train']['ocr_text'], model)
+    train_embeddings = (train_embeddings, train_ocr)
+    train_embeddings = combine_features(args, train_embeddings)
+
+    try:
+        val_embeddings = ds_to_embeddings(dataset['validation'], model, preprocess)
+        val_ocr = clip_text(dataset['validation']['ocr_text'], model)
+        val_embeddings = (val_embeddings, val_ocr)
+        val_embeddings = combine_features(args, val_embeddings)
+    except KeyError:
+        val_embeddings = None
+    
+    test_embeddings = ds_to_embeddings(dataset['test'], model, preprocess)
+    test_ocr = clip_text(dataset['test']['ocr_text'], model)
+    test_embeddings = (test_embeddings, test_ocr)
+    test_embeddings = combine_features(args, test_embeddings)
+    
+    return train_embeddings, val_embeddings, test_embeddings 
+
+def clip_features(image_lst, model):
+    clean_up()
+    tensor = torch.tensor(np.stack(image_lst)).cuda()
+    dataset = torch_dataset(tensor)
+    if len(dataset) == 1:
+        with torch.no_grad():
+            for x in dataset:
+                embeddings = np.array(model.encode_image(x[0]).float().cpu())#.cpu()
+        clean_up()
+        return embeddings
+    else:
+        embeddings = np.zeros(shape=(len(image_lst), model.ln_final.normalized_shape[0]))
+        stop=0
+        for idx, x in tqdm(enumerate(dataset)):
+            with torch.no_grad():
+                image_features = np.array(model.encode_image(x[0]).float().cpu())#.cpu()
+            
+            rows = image_features.shape[0]
+            if idx != len(dataset)-1:
+                start = (idx * rows)
+                stop = (idx+1) * rows    
+        
+            else:
+                start = stop
+                stop = stop + rows
+
+            embeddings[start:stop, :] = image_features
+            clean_up()
+        return embeddings
+
+def seed_everything(seed: int):
+    random.seed(seed)  # Python's built-in random module
+    os.environ['PYTHONHASHSEED'] = str(seed)  # Ensures hash-based operations are deterministic
+    np.random.seed(seed)  # NumPy's random generator
+    torch.manual_seed(seed)  # PyTorch's CPU RNG
+    torch.cuda.manual_seed(seed)  # PyTorch's CUDA RNG (single GPU)
+    torch.cuda.manual_seed_all(seed)  # CUDA RNG for multi-GPU
+    torch.backends.cudnn.deterministic = True  # Forces cuDNN to be deterministic
+    torch.backends.cudnn.benchmark = False  # Disables cuDNN auto-tuner for deterministic behavior
+
+    # For torch's new Generator API (PyTorch 1.8+)
+    torch.use_deterministic_algorithms(True, warn_only=True)
+    # Optional: If using `transformers` library (Hugging Face)
+    try:
+        import transformers
+        transformers.set_seed(seed)
+    except ImportError:
+        pass
+    # Optional: If using Dataloader workers in PyTorch
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":16:8"  # Ensures deterministic CuBLAS behavior (PyTorch 1.10+)
+    print(f"Random seed set to {seed}")
+
+
+def clean_up():
+    torch.cuda.empty_cache()
+    gc.collect()
+
+def clip_text(text_lst, model):
+    clean_up()
+    embeddings = np.zeros(shape=(len(text_lst), model.ln_final.normalized_shape[0]))
+    for idx, text in tqdm(enumerate(text_lst)):
+        text = clip.tokenize([text], truncate=True).cuda()
+        text = model.encode_text(text).cpu().detach().numpy()
+        embeddings[idx] = text
+    
+    return embeddings
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -13,6 +208,25 @@ def str2bool(v):
         return True
     elif v.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
+
+def combine_features(args, embeddings):
+    pic, text = embeddings
+    
+    if args.combine in ['fusion']:
+        print('fusing')
+        output = np.multiply(pic, text)
+    
+    elif args.combine in ['concatenate']:
+        print('concatenating')
+        output = np.concatenate((pic, text), axis=1)
+    
+    elif args.combine in ['fancy']:
+        print('fancy')
+        pic = normalize(pic, axis=1, norm='l2')
+        text = normalize(text, axis=1, norm='l2')
+        output = np.mean([pic, text], axis=0)
+    
+    return output
 
 def memotion3(task):
     dataset = dict()
@@ -134,70 +348,53 @@ def load_dataset(args):
     elif args.dataset == 'figmemes':
         return figmemes(args)
 
-
 def mami(args):
-    LABEL_LIST = ["shaming",	"stereotype",	"objectification", 	"violence"]
-    STYLE_LIST = ["art", "real", "infograph", "mixed"]
-    folder = os.path.join(args.data_root)
-    # TODO comment out
-    try:
-       dataset = datasets.load_from_disk(os.path.join(folder, "hf_dataset", args.split, args.all_feature_type))
-    except FileNotFoundError:
-        print("TiMemes HF dataset does not yet exist. Creating it.")
-        all_features = {}
-
-        for split in ["training", "test"]:
-            with open(os.path.join(folder, f"{split}.csv"), "r", encoding="utf-8-sig") as f:
-                for row in tqdm(csv.DictReader(f, delimiter="\t", quoting=csv.QUOTE_NONE), desc="Annotations"):
-                    k = "file_name"
-                    name = f'{split}/{row[k]}'
-                    all_features[name] = {
-                        "img_id": name,
-                        "img_path": os.path.join(folder, f"{split}", f'{row[k]}'),
-                        "ocr_text": row["Text Transcription"],
-                        "labels": [float(row[label]) for label in LABEL_LIST]
-                    }
-            with open(os.path.join(folder, "style_labels", f"{split.replace('ing', '')}_style_labels.tsv"), "r",
-                        encoding="utf-8") as f:
-                for row in tqdm(csv.DictReader(f, delimiter="\t"), desc="Annotations"):
-                    name = f'{split}/{row["img_id"]}'
-                    assert name in all_features
-                    for style in STYLE_LIST:
-                        if int(row[style]) == 1:
-                            all_features[name]["style"] = style
-                            break
-        with open(os.path.join(folder, f"{args.split}_split.tsv"), "r", encoding="utf-8") as f:
-            for row in tqdm(csv.DictReader(f, delimiter="\t"), desc="Annotations"):
-                if row["img_name"] not in all_features:
-                    print(row["img_name"])
-                    continue
-                all_features[row["img_name"]]["split"] = row["split"]
-                if "year" in row:
-                    all_features[row["img_name"]]["year"] = row["year"]
-                if "cluster" in row:
-                    all_features[row["img_name"]]["cluster"] = row["cluster"]
-        if args.all_feature_type:
-            for split in ["training", "test"]:
-                for feature_type in args.all_feature_type.split(","):
-                    with h5py.File(os.path.join(folder, "features", f"{split}_{feature_type}.h5"), "r") as f:
-                        for img_id in f.keys():
-                            name = f'{split}/{img_id}'
-                            if name not in all_features:
-                                print(f"Image {name} does not exist in any split.")
-                                continue
-                            all_features[name][f"{feature_type}_feature"] = f[f'{img_id}/features'][()]
-                            all_features[name][f"img_h"] = f[f'{img_id}/img_h'][()]
-                            all_features[name][f"img_w"] = f[f'{img_id}/img_w'][()]
-                            all_features[name][f"{feature_type}_rect"] = f[f'{img_id}/boxes'][()]
-        split_features = {"train": [], "validation": [], "test": []}
-        for feature in all_features.values():
-            split = feature.pop("split")
-            split_features[split].append(feature)
-        for split, split_feature in split_features.items():
-            split_features[split] = {k: [f[k] for f in split_feature] for k in split_feature[0].keys()}
-        dataset = datasets.DatasetDict({split: datasets.Dataset.from_dict(split_features[split]) for split in split_features})
-        #dataset.save_to_disk(os.path.join(folder, "hf_dataset", args.split, args.all_feature_type))
-
+    task = args.task
+    path =  args.data_root
+    train_df = pd.read_csv(f'{path}training.csv', delimiter='\t')
+    test_df = pd.read_csv(f'{path}test.csv', delimiter='\t')
+    dataset = dict()
+    if task == 1:
+        LABEL_LIST = ['neutral', 'misogynous']
+        train_df = train_df[['file_name', 'misogynous', 'Text Transcription']]
+        test_df = test_df[['file_name', 'misogynous', 'Text Transcription']]
+    elif task == 2:
+        LABEL_LIST = ['shaming', 'stereotype', 'objectification', 'violence']
+        train_df = train_df[['file_name', 'shaming', 'stereotype', 'objectification', 'violence', 'Text Transcription']]
+        test_df = test_df[['file_name', 'shaming', 'stereotype', 'objectification', 'violence', 'Text Transcription']]
+    
+    for split in ['training', 'test']:
+        if split in ['training']:
+            add_path = 'training/'
+            df = train_df
+        elif split in ['test']:
+            add_path = 'test/'
+            df = test_df
+        img_path = [f'{path}{add_path}{img}' for img in df.file_name.tolist()]
+        df['img_path'] = img_path
+        
+        df.rename(columns={'Text Transcription': 'ocr_text'}, inplace=True)
+        
+        if task == 1:
+            labels = []
+            for lab in df.misogynous.tolist():
+                if lab == 0:
+                    labels.append([0, 1])
+                elif lab == 1:
+                    labels.append([1, 0])
+            df['labels'] = labels
+        elif task == 2:
+            df['labels'] = df[LABEL_LIST].values.tolist()
+        
+        df = df[['img_path', 'labels', 'ocr_text']] 
+        df = datasets.Dataset.from_pandas(df)
+        
+        if split in ['training']:
+            dataset['train'] = df
+        elif split in ['test']:
+            dataset['test'] = df
+        
+    dataset = datasets.DatasetDict(dataset)
     return LABEL_LIST, dataset
 
 
@@ -205,10 +402,7 @@ def figmemes(args):
     LABEL_LIST = ["allusion", "exaggeration", "irony", "anthrop", "metaphor", "contrast"]
     STYLE_LIST = ["arts", "real", "infograph", "mixed"]
     folder = os.path.join(args.data_root)
-    #try:
-    #    dataset = datasets.load_from_disk(os.path.join(folder, "hf_dataset", args.split, args.all_feature_type))
-    #except FileNotFoundError:
-        #print("FigMemes HF dataset does not yet exist. Creating it.")
+   
     all_features = {}
     with open(os.path.join(folder, "figmemes_annotations.tsv"), "r", encoding="utf-8") as f:
         for row in tqdm(csv.DictReader(f, delimiter="\t"), desc="Annotations"):
@@ -229,16 +423,7 @@ def figmemes(args):
                 all_features[row["img_name"]]["year"] = row["year"]
             if "cluster" in row:
                 all_features[row["img_name"]]["cluster"] = row["cluster"]
-    # for feature_type in args.all_feature_type.split(","):
-    #     with h5py.File(os.path.join(folder, "features", f"all_{feature_type}.h5"), "r") as f:
-    #         for img_id in f.keys():
-    #             if img_id not in all_features:
-    #                 print(f"Image {img_id} does not exist in any split.")
-    #                 continue
-    #             all_features[img_id][f"{feature_type}_feature"] = f[f'{img_id}/features'][()]
-    #             all_features[img_id][f"img_h"] = f[f'{img_id}/img_h'][()]
-    #             all_features[img_id][f"img_w"] = f[f'{img_id}/img_w'][()]
-    #             all_features[img_id][f"{feature_type}_rect"] = f[f'{img_id}/boxes'][()]
+   
     split_features = {"train": [], "validation": [], "test": []}
     for feature in all_features.values():
         split = feature.pop("split")
@@ -246,18 +431,12 @@ def figmemes(args):
     for split, split_feature in split_features.items():
         split_features[split] = {k: [f[k] for f in split_feature] for k in split_feature[0].keys()}
     dataset = datasets.DatasetDict({split: datasets.Dataset.from_dict(split_features[split]) for split in split_features})
-        #dataset.save_to_disk(os.path.join(folder, "hf_dataset", args.split, args.all_feature_type))
-
+       
     return LABEL_LIST, dataset
 
 def multioff(args):
     LABEL_LIST = ["Non-offensiv", "offensive"]
     folder = os.path.join(args.data_root)
-    #try:
-        #dataset = datasets.load_from_disk(os.path.join(folder,"Split_Dataset", "hf_dataset"))
-        #dataset = datasets.load_from_disk(os.path.join(folder, "hf_dataset", args.split, args.all_feature_type))
-    #except FileNotFoundError:
-        #print("MultiOff HF dataset does not yet exist. Creating it.")
     all_features = {}
     converter = {"Training_meme_dataset":"train", "Validation_meme_dataset":"validation","Testing_meme_dataset":"test"}
     for split in ["Training_meme_dataset", "Validation_meme_dataset","Testing_meme_dataset"]:
@@ -278,6 +457,76 @@ def multioff(args):
     for split, split_feature in split_features.items():
         split_features[split] = {k: [f[k] for f in split_feature] for k in split_feature[0].keys()}
     dataset = datasets.DatasetDict({split: datasets.Dataset.from_dict(split_features[split]) for split in split_features})
-        #dataset.save_to_disk(os.path.join(folder, "hf_dataset", args.split, args.all_feature_type))
+       
 
     return LABEL_LIST, dataset
+
+def downsample_train_val(train, val, args):
+    encoders = ['ViT-L/14@336px', 'ViT-B/32', 'ViT-B/16']
+    assert args.feature in encoders
+    if args.feature == encoders[0]:
+        downsample_dict = {'multioff': {'train': 64, 'val': 53},
+                           'memotion3': {'train':926, 'val':231},
+                           'figmemes': {'train':751, 'val':255},
+                           'mami': {'train':647, 'val':161}}
+    elif args.feature == encoders[1]:
+        downsample_dict = {'multioff': {'train': 91, 'val': 59},
+                           'memotion3': {'train':877, 'val':219},
+                           'figmemes': {'train':757, 'val':255},
+                           'mami': {'train':705, 'val':176}}
+    elif args.feature == encoders[2]:
+        downsample_dict = {'multioff': {'train': 78, 'val': 56},
+                           'memotion3': {'train':670, 'val':167},
+                           'figmemes': {'train':791, 'val':259},
+                           'mami': {'train':787, 'val':196}}
+
+    train = train.to_pandas()
+    val = val.to_pandas()
+    train_samp_size = downsample_dict[args.dataset]['train']
+    val_samp_size = downsample_dict[args.dataset]['val'] 
+    samp_train = train.sample(train_samp_size, random_state=args.seed)
+    samp_val = val.sample(val_samp_size, random_state=args.seed)
+    train = train.drop(samp_train.index)
+    val = val.drop(samp_val.index)
+
+    return datasets.Dataset.from_pandas(train), datasets.Dataset.from_pandas(val)
+
+def downsample_tsplit(train, val, args):
+    encoders = ['ViT-L/14@336px', 'ViT-B/32', 'ViT-B/16']
+    assert args.feature in encoders
+    if args.feature == encoders[0]:
+        downsample_dict = {'multioff': {'train': 64, 'val': 53},
+                           'memotion3': {'train':926, 'val':231},
+                           'figmemes': {'train':751, 'val':255},
+                           'mami': {'train':647, 'val':161}}
+    elif args.feature == encoders[1]:
+        downsample_dict = {'multioff': {'train': 91, 'val': 59},
+                           'memotion3': {'train':877, 'val':219},
+                           'figmemes': {'train':757, 'val':255},
+                           'mami': {'train':705, 'val':176}}
+    elif args.feature == encoders[2]:
+        downsample_dict = {'multioff': {'train': 78, 'val': 56},
+                           'memotion3': {'train':670, 'val':167},
+                           'figmemes': {'train':791, 'val':259},
+                           'mami': {'train':787, 'val':196}}
+    train = train.to_pandas()
+    val = val.to_pandas()
+    train_size = len(train)
+    val_size = len(val)
+    train_samp_size = downsample_dict[args.dataset]['train']
+    val_samp_size = downsample_dict[args.dataset]['val']
+
+    if train_size <= train_samp_size:
+        train = datasets.Dataset.from_pandas(train)
+    else:
+        samp_train = train.sample(train_size-train_samp_size, random_state=args.seed)
+        train = train.drop(samp_train.index)
+        train = datasets.Dataset.from_pandas(train)
+    if val_size <= val_samp_size:
+        val = datasets.Dataset.from_pandas(val)
+    else:
+        samp_val = val.sample(val_size-val_samp_size, random_state=args.seed)
+        val = val.drop(samp_val.index)
+        val = datasets.Dataset.from_pandas(val)
+    
+    return train, val
