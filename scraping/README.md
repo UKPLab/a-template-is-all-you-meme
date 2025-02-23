@@ -294,7 +294,8 @@ For each successfully processed meme, the following metadata is stored in the **
   "pic_directory": "meme_examples/1_Meme_Title/",
   "example_title": "1_Meme_Title.jpg"
 }
-
+```json
+---
 #### Step 7
 Run `org_temps.py` to get the templates in the final format we used for our experiments.
 
