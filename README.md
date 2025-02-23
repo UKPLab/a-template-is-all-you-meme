@@ -31,7 +31,7 @@ Then, please use the `requirements.txt` file.
 #### Disclaimer: Our work should only ever be used for academic purposes.
 [Our data files](https://knowyourmeme.com/memes/chonk-oh-lawd-he-comin) are some [chonky bois](https://knowyourmeme.com/memes/big-chungus)
 
-For the moment, please contact us about accessing the KYMKB. :)
+Please see our scraping code for creating your own KYMKB!
 
 Remember, sometimes memes are mean. We take no responsiblility if they are offensive nor do they reflect our views in any way.
 
@@ -104,5 +104,3 @@ publisher = {arXiv},
 year = {2023},
 }
 ```
-
-### Update coming soon!
