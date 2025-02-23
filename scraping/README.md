@@ -284,6 +284,7 @@ Run `get_examples.py` to visit each template page and download/write to disk all
 #### Example JSON Format for Processed Memes
 
 For each successfully processed meme, the following metadata is stored in the **`example_pictures.json`** file:
+### JSON Data Example
 
 ```json
 {
@@ -294,8 +295,9 @@ For each successfully processed meme, the following metadata is stored in the **
   "pic_directory": "meme_examples/1_Meme_Title/",
   "example_title": "1_Meme_Title.jpg"
 }
-```json
----
+
+
+
 #### Step 7
 Run `org_temps.py` to get the templates in the final format we used for our experiments.
 
