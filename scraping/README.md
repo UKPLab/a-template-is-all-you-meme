@@ -324,23 +324,8 @@ This Python script processes meme files, organizes them by title, and creates di
    - It also tracks how many titles were skipped (if they were already processed) and how many were processed successfully.
 
 ### 4. **JSON Output Format**
-   After processing, the script saves the metadata for each template in a JSON file (`template_info.json`). The format for each entry is as follows:
-
-   ```json
-   {
-     "template_title": {
-       "title": "Template Title",
-       "original_info": [
-         {"pic_title": "image1.jpg", "other_info": "details"},
-         {"pic_title": "image2.jpg", "other_info": "details"}
-       ],
-       "out_paths": [
-         "template_examples/templates/folder1/image1.jpg",
-         "template_examples/templates/folder1/image2.jpg"
-       ]
-     }
-   }
-
+   After processing, the script saves the metadata for each template in a JSON file (`template_info.json`). 
+   
 #### Step 8
 Run `org_examples.py` to get the template examples in the final format we use for our experiments.
 
@@ -403,24 +388,6 @@ This Python script processes template information, gathers meme examples, and co
    - The script iterates over the template information loaded from the JSON file.
    - For each template, it gathers the example files and copies them to the appropriate directory.
    - After processing all templates, it prints the total number of files copied.
-
-### 6. **JSON Output Format**
-   After processing, the script assumes the following structure for the `template_info.json`:
-
-   ```json
-   {
-     "template_title": {
-       "title": "Template Title",
-       "original_info": [
-         {"pic_title": "image1.jpg", "other_info": "details"},
-         {"pic_title": "image2.jpg", "other_info": "details"}
-       ],
-       "out_paths": [
-         "template_examples/templates/folder1/image1.jpg",
-         "template_examples/templates/folder1/image2.jpg"
-       ]
-     }
-   }
 
 #### Step 9
 Run `remove_dups.py` to get rid of redundant data.
