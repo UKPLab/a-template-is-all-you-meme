@@ -296,7 +296,6 @@ For each successfully processed meme, the following metadata is stored in the **
 }
 
 #### Step 7
-#### Step 7
 Run `org_temps.py` to get the templates in the final format we used for our experiments.
 
 # Meme Template Processing and Organization
